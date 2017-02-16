@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Configuration>
+  <Tab ID="0" Name="Default">
+    <Link ID="0" Name="Google.com (IE Default)" Target="command: iexplore.exe http://www.google.com" Type="cmd"/>
+    <Link ID="1" Name="Google.com (IE Default) 2" Target="command: iexplore.exe http://www.google.com" Type="cmd"/>
+    <Link ID="2" Name="Configuration.xml" Target="C:\Users\Ian\Desktop\Link Manager\Source_Code\workspace\LinkManager\configuration.xml" Type="file"/>
+    <Link ID="3" Name="______________________________________________________________________" Target="SEPARATOR" Type="sep"/>
+    <Link ID="4" Name="Ping" Target="command: ping CUSTOM_VAR" Type="cmd"/>
+    <Link ID="5" Name="Dir" Target="command: dir" Type="cmd"/>
+  </Tab>
+  <Tab ID="1" Name="Tab 2">
+    <Link ID="0" Name="Notepad" Target="command: notepad.exe" Type="cmd"/>
+  </Tab>
+</Configuration>
