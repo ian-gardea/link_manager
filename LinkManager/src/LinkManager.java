@@ -31,7 +31,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  * for a full description of features.
  * 
  * @author Ian Gardea
- * @version 1.0.0
+ * @version 1.0.1
  * 
  */
 public class LinkManager {
@@ -100,13 +100,10 @@ public class LinkManager {
 		final JMenuItem jmiSave = jmnFile.add("Save");
 		jmiSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK));
 
-		final JMenuItem jmiRevert = jmnFile.add("Revert");
+		final JMenuItem jmiRevert = jmnFile.add("Reload Session File");
 		jmiRevert.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK));
 		
 		jmnFile.addSeparator();
-		
-		final JMenuItem jmiLock = jmnFile.add("Lock");
-		jmiLock.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, Event.CTRL_MASK));
 		
 		final JMenuItem jmiSetVariable = jmnFile.add("Set Custom Variable");
 		jmiSetVariable.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, 0));
@@ -119,6 +116,11 @@ public class LinkManager {
 		final JMenu jmnEdit = new JMenu("Edit");
 		jmnEdit.setMnemonic(KeyEvent.VK_E);
 
+		final JMenuItem jmiLock = jmnEdit.add("Lock");
+		jmiLock.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, Event.CTRL_MASK));
+
+		jmnEdit.addSeparator();
+		
 		final JMenuItem jmiAddTab = jmnEdit.add("Add Tab");
 		jmiAddTab.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Event.CTRL_MASK));
 
@@ -135,11 +137,11 @@ public class LinkManager {
 		
 		jmnEdit.addSeparator();
 		
-		final JMenuItem jmiDeleteLinks = jmnEdit.add("Delete Selected Links");
-		jmiDeleteLinks.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0));
-		
 		final JMenuItem jmiRunLinks = jmnEdit.add("Run Selected Links");
 		jmiRunLinks.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, 0));
+		
+		final JMenuItem jmiDeleteLinks = jmnEdit.add("Delete Selected Links");
+		jmiDeleteLinks.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0));
 		
 		// Help menu
 		final JMenu jmnHelp = new JMenu("Help");
