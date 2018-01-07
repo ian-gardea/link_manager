@@ -38,30 +38,32 @@ public class LinkManager {
 	private static final String JRE;
 	
 	private static IniFile INI; // Configuration file that holds customizable settings.
-	private static File FILE;
-	private static File README;
+	private static File    FILE;
+	private static File    README;
 	
 	private static final JFrame FRAME;
-	private static final int SLEEPTIME;
-	private static final int GUIWIDTH;
-	private static final int GUIHEIGHT;
-	private static String CUSTOM_VAR;
+	private static final int    SLEEPTIME;
+	private static final int    GUIWIDTH;
+	private static final int    GUIHEIGHT;
+	private static String       CUSTOM_VAR;
 	
 	private static CustomTabList tabbedList = null;
 	private static boolean       isLocked;
 	
 	static {
-		// These variables are only allowed to be changed during development.
+		// These variables can only be changed during development.
 	    VERSION = "1.0.1"; // TODO: Please update on every subsequent code change.
         JRE = "1.7.0_45";  // TODO: Please update if tested on a later JRE.
         
-        // Load other global variables from a configuration file to allow users to change them as needed.
+        FRAME = new JFrame("Link Manager v" + VERSION);
+        
+        // Initialize file pointers.
 		try {
 	        
 			INI = new IniFile("./config.ini");
 			
 			FILE       = new File(INI.getString("global","sessionFilePath", "./session.xml"));
-			README     = new File(INI.getString("global","readmeFilePath", "./README.txt"));
+			README     = new File("./README.txt");
 		}
 		catch (IOException ex) {
 			JOptionPane.showMessageDialog(LinkManager.FRAME, "An error occurred reading the INI file." + ex.getLocalizedMessage(),
@@ -79,9 +81,8 @@ public class LinkManager {
 					"Unknown Error", JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
 		}
-		
-		FRAME = new JFrame("Link Manager v" + VERSION);
-			
+
+		// Ensure global variables are assigned a value by defining them outside the try/catch.
 		CUSTOM_VAR = INI.getString("global","customVarValue", "CUSTOM_VAR");
 		SLEEPTIME = INI.getInt("gui","sleepTime", 2000);
 		GUIWIDTH = INI.getInt("gui","guiWidth", 480);
@@ -125,6 +126,7 @@ public class LinkManager {
 		}
 		else{
 			showInstructions();
+			tabbedList.newDocument(FILE);
 		}
 
 		// Main menu
@@ -216,7 +218,12 @@ public class LinkManager {
 		jmiSave.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
-						tabbedList.saveDocument(FILE);
+						if(!LinkManager.isLocked) {
+							tabbedList.saveDocument(FILE);
+						}
+						else {
+							LinkManager.showLockedMessage();
+						}
 					}
 				});
 		jmiRevert.addActionListener(

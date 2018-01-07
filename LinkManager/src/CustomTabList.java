@@ -205,9 +205,17 @@ public class CustomTabList extends JTabbedPane {
 	 * @param f - the source XML configuration file.
 	 */
 	public void newDocument(File f) {
-		int dialogButton = JOptionPane.YES_NO_OPTION;
-		int dialogResult = JOptionPane.showConfirmDialog(LinkManager.getFrame(), "Starting a new document will erase the previously set coniguration.\n"
-				+ "This cannot be reversed. Are you sure?", "Erase Existing Configuration", dialogButton);
+		int dialogResult;
+		
+		// If there is already a session file, do not show the confirmation message. 
+		if (f.exists()) {
+			int dialogButton = JOptionPane.YES_NO_OPTION;
+			dialogResult = JOptionPane.showConfirmDialog(LinkManager.getFrame(), "Starting a new document will erase the previously set coniguration.\n"
+					+ "This cannot be reversed. Are you sure?", "Erase Existing Configuration", dialogButton);			
+		} 
+		else {
+			dialogResult = JOptionPane.YES_OPTION;
+		}
 		
 		if(dialogResult == JOptionPane.YES_OPTION) {
 			try {
