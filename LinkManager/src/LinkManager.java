@@ -24,7 +24,6 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-
 /**
  * This program allows the dynamic creation, and execution
  * of links, and DOS commands. See the README documentation 
@@ -35,17 +34,59 @@ import javax.swing.UnsupportedLookAndFeelException;
  * 
  */
 public class LinkManager {
+	private static final String VERSION;    
+	private static final String JRE;
 	
-	private static final String  VERSION    = "1.0.0";    // TODO: Please update on every subsequent code change.
-	private static final String  JRE        = "1.7.0_45"; // TODO: Please update if tested on a later JRE.
-	private static final int     SLEEPTIME  = 1500;
-	private static final JFrame  FRAME      = new JFrame("Link Manager v" + VERSION);
-	private static final File    FILE       = new File("./configuration.xml");
-	private static final File    README     = new File("./README.txt");
-
+	private static IniFile INI; // Configuration file that holds customizable settings.
+	private static File FILE;
+	private static File README;
+	
+	private static final JFrame FRAME;
+	private static final int SLEEPTIME;
+	private static final int GUIWIDTH;
+	private static final int GUIHEIGHT;
+	private static String CUSTOM_VAR;
+	
 	private static CustomTabList tabbedList = null;
-	private static String        CUSTOM_VAR = "CUSTOM_VAR";
 	private static boolean       isLocked;
+	
+	static {
+		// These variables are only allowed to be changed during development.
+	    VERSION = "1.0.1"; // TODO: Please update on every subsequent code change.
+        JRE = "1.7.0_45";  // TODO: Please update if tested on a later JRE.
+        
+        // Load other global variables from a configuration file to allow users to change them as needed.
+		try {
+	        
+			INI = new IniFile("./config.ini");
+			
+			FILE       = new File(INI.getString("global","sessionFilePath", "./session.xml"));
+			README     = new File(INI.getString("global","readmeFilePath", "./README.txt"));
+		}
+		catch (IOException ex) {
+			JOptionPane.showMessageDialog(LinkManager.FRAME, "An error occurred reading the INI file." + ex.getLocalizedMessage(),
+					"I/O Exception", JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
+		}
+		catch (NullPointerException ex) {
+			String iniErrMessage = "An error occurred when trying to load INI file key \"" + INI.getLastKey() + "\".";
+			JOptionPane.showMessageDialog(LinkManager.FRAME, iniErrMessage,
+					"I/O Exception", JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
+		}
+		catch (Exception ex) {
+			JOptionPane.showMessageDialog(LinkManager.FRAME, ex.getLocalizedMessage(),
+					"Unknown Error", JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
+		}
+		
+		FRAME = new JFrame("Link Manager v" + VERSION);
+			
+		CUSTOM_VAR = INI.getString("global","customVarValue", "CUSTOM_VAR");
+		SLEEPTIME = INI.getInt("gui","sleepTime", 2000);
+		GUIWIDTH = INI.getInt("gui","guiWidth", 480);
+		GUIHEIGHT = INI.getInt("gui","guiHeight", 600);
+	}
 	
 	/**
 	 * Schedules a job for the event-dispatching thread to
@@ -54,12 +95,12 @@ public class LinkManager {
 	 */
 	public LinkManager() {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			public void run() {				
+			public void run() {
 				createAndShowGUI();
 			}
 		});
 	}
-
+	
 	/**
 	 * Creates and displays the main GUI.
 	 * 
@@ -352,7 +393,7 @@ public class LinkManager {
 		FRAME.add(tabbedList);
 
 		// Set JFRAME preferences.
-		FRAME.setPreferredSize(new Dimension(480, 640));
+		FRAME.setPreferredSize(new Dimension(GUIWIDTH, GUIHEIGHT));
 		FRAME.setResizable(false);
 		FRAME.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		FRAME.setVisible(true);
