@@ -16,7 +16,7 @@ from your computer, to the main window to build your own, customized list of
 links. Once created, you can save your configuration to an XML file for future 
 use on subsequent sessions.
 
-By default, the file `configuration.xml` is saved in the same folder that the program is located in.
+By default, the file `session.xml` is saved in the same folder that the program is located in.
 
 ---
 
