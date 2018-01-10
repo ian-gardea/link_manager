@@ -200,9 +200,9 @@ public class CustomTabList extends JTabbedPane {
 	
 	/**
 	 * This function will start a clean session after receiving confirmation from the user
-	 * by deleting the configuration XML file.
+	 * by deleting the session XML file.
 	 * 
-	 * @param f - the source XML configuration file.
+	 * @param f - the source XML session file.
 	 */
 	public void newDocument(File f) {
 		int dialogResult;
@@ -210,8 +210,8 @@ public class CustomTabList extends JTabbedPane {
 		// If there is already a session file, do not show the confirmation message. 
 		if (f.exists()) {
 			int dialogButton = JOptionPane.YES_NO_OPTION;
-			dialogResult = JOptionPane.showConfirmDialog(LinkManager.getFrame(), "Starting a new document will erase the previously set coniguration.\n"
-					+ "This cannot be reversed. Are you sure?", "Erase Existing Configuration", dialogButton);			
+			dialogResult = JOptionPane.showConfirmDialog(LinkManager.getFrame(), "Erase the old session file, and start a new one?\n"
+					+ "This action cannot be reversed.", "Erase Existing Session", dialogButton);			
 		} 
 		else {
 			dialogResult = JOptionPane.YES_OPTION;
@@ -254,7 +254,7 @@ public class CustomTabList extends JTabbedPane {
 	/**
 	 * This function will create/update the XML file based on the current tabs/links present in the session.
 	 * 
-	 * @param f - the XML configuration file to be created/updated.
+	 * @param f - the XML session file to be created/updated.
 	 */
 	public void saveDocument(File f) {
 		try {
@@ -273,7 +273,7 @@ public class CustomTabList extends JTabbedPane {
 					
 			// Root element
 			doc = dBuilder.newDocument();
-			Element rootElement = doc.createElement("Configuration");
+			Element rootElement = doc.createElement("Session");
 			doc.appendChild(rootElement);
 
 			for(int i=0; i<tabs.size(); i++){
@@ -344,7 +344,7 @@ public class CustomTabList extends JTabbedPane {
 	/**
 	 * This function will restore any uncommitted (non-saved) changes made in the session to its previous state.
 	 * 
-	 * @param f - the source XML configuration file.
+	 * @param f - the source XML session file.
 	 */
 	public void revertDocument(File f) {
 		try {

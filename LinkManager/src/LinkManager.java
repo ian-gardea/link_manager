@@ -20,6 +20,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -33,19 +34,19 @@ import javax.swing.UnsupportedLookAndFeelException;
  * @version 1.0.1
  * 
  */
-public class LinkManager {
+public class LinkManager{
 	private static final String VERSION;    
 	private static final String JRE;
 	
 	private static IniFile INI; // Configuration file that holds customizable settings.
-	private static File    FILE;
-	private static File    README;
+	private static File   FILE;
+	private static File   README;
+	private static JFrame FRAME;
 	
-	private static final JFrame FRAME;
-	private static final int    SLEEPTIME;
-	private static final int    GUIWIDTH;
-	private static final int    GUIHEIGHT;
-	private static String       CUSTOM_VAR;
+	public static final int SLEEPTIME;
+	public static final int GUIWIDTH;
+	public static final int GUIHEIGHT;
+	public static String CUSTOM_VAR;
 	
 	private static CustomTabList tabbedList = null;
 	private static boolean       isLocked;
@@ -62,7 +63,7 @@ public class LinkManager {
 	        
 			INI = new IniFile("./config.ini");
 			
-			FILE       = new File(INI.getString("global","sessionFilePath", "./session.xml"));
+			FILE       = new File("./session.xml");
 			README     = new File("./README.txt");
 		}
 		catch (IOException ex) {
@@ -128,11 +129,15 @@ public class LinkManager {
 			showInstructions();
 			tabbedList.newDocument(FILE);
 		}
-
+		
 		// Main menu
 		JMenuBar jmbMain = new JMenuBar();
 		FRAME.setJMenuBar( jmbMain );
 
+		// Right-click context menu.
+		JPopupMenu menuPopup = new JPopupMenu();
+		tabbedList.setComponentPopupMenu(menuPopup);
+		
 		// File menu
 		final JMenu jmnFile = new JMenu("File");
 		jmnFile.setMnemonic(KeyEvent.VK_F);
@@ -159,32 +164,55 @@ public class LinkManager {
 		final JMenu jmnEdit = new JMenu("Edit");
 		jmnEdit.setMnemonic(KeyEvent.VK_E);
 
+		// The below creates the JMenuItems twice; one for the menu, and the other for the right-click. 
+		// The same JMenuItem cannot be used.
 		final JMenuItem jmiLock = jmnEdit.add("Lock");
+		final JMenuItem jmiLockRC = jmnEdit.add("Lock");
 		jmiLock.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, Event.CTRL_MASK));
-
+		jmiLockRC.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, Event.CTRL_MASK));
+		menuPopup.add(jmiLockRC);
+		
 		jmnEdit.addSeparator();
 		
 		final JMenuItem jmiAddTab = jmnEdit.add("Add Tab");
+		final JMenuItem jmiAddTabRC = jmnEdit.add("Add Tab");
 		jmiAddTab.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Event.CTRL_MASK));
-
+		jmiAddTabRC.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, Event.CTRL_MASK));
+		menuPopup.add(jmiAddTabRC);
+		
 		final JMenuItem jmiDeleteTab = jmnEdit.add("Delete Tab");
+		final JMenuItem jmiDeleteTabRC = jmnEdit.add("Delete Tab");
 		jmiDeleteTab.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, Event.CTRL_MASK));
+		jmiDeleteTabRC.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, Event.CTRL_MASK));
+		menuPopup.add(jmiDeleteTabRC);
 		
 		jmnEdit.addSeparator();
 		
 		final JMenuItem jmiAddLink = jmnEdit.add("Add Link");
+		final JMenuItem jmiAddLinkRC = jmnEdit.add("Add Link");
 		jmiAddLink.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, 0));
+		jmiAddLinkRC.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, 0));
+		menuPopup.add(jmiAddLinkRC);
 
 		final JMenuItem jmiAddSeparator = jmnEdit.add("Add Separator");
+		final JMenuItem jmiAddSeparatorRC = jmnEdit.add("Add Separator");
 		jmiAddSeparator.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0));
+		jmiAddSeparatorRC.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0));
+		menuPopup.add(jmiAddSeparatorRC);
 		
 		jmnEdit.addSeparator();
 		
 		final JMenuItem jmiRunLinks = jmnEdit.add("Run Selected Links");
+		final JMenuItem jmiRunLinksRC = jmnEdit.add("Run Selected Links");
 		jmiRunLinks.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, 0));
+		jmiRunLinksRC.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, 0));
+		menuPopup.add(jmiRunLinksRC);
 		
 		final JMenuItem jmiDeleteLinks = jmnEdit.add("Delete Selected Links");
+		final JMenuItem jmiDeleteLinksRC = jmnEdit.add("Delete Selected Links");
 		jmiDeleteLinks.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0));
+		jmiDeleteLinksRC.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0));
+		menuPopup.add(jmiDeleteLinksRC);
 		
 		// Help menu
 		final JMenu jmnHelp = new JMenu("Help");
@@ -237,46 +265,6 @@ public class LinkManager {
 						}
 					}
 				});
-		
-		jmiLock.addActionListener(
-				new ActionListener() {
-					public void actionPerformed(ActionEvent event) {
-						if(tabbedList != null) {							
-							if(LinkManager.isLocked) {
-								TabInputHandler.enableInputListeners(tabbedList);
-
-								for(int i=0; i<tabbedList.getTabList().size(); i++) {
-									CustomLinkPane currentTab = tabbedList.getTabList().get(i);
-
-									DropTargetHandler.enableDragListeners(currentTab);
-									if(currentTab.getLinkTable() != null) {
-										TableTransferHandler.enableTransferListeners(currentTab.getLinkTable(), currentTab);
-									}
-								}
-
-								jmiLock.setText("Lock");
-							}
-							else {
-								TabInputHandler.disableInputListeners(tabbedList);
-
-								for(int i=0; i<tabbedList.getTabList().size(); i++) {
-									CustomLinkPane currentTab = tabbedList.getTabList().get(i);
-
-									DropTargetHandler.disableDragListeners(currentTab);
-									if(currentTab.getLinkTable() != null) {
-										TableTransferHandler.disableTransferListeners(currentTab.getLinkTable(), currentTab);
-									}
-								}
-
-								jmiLock.setText("Unlock");
-							}
-							LinkManager.isLocked = !LinkManager.isLocked;
-							for(int i=0; i<tabbedList.getTabList().size(); i++) {
-								tabbedList.getTabList().get(i).refresh();
-							}
-						}
-					}
-				});
 		jmiSetVariable.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
@@ -307,6 +295,53 @@ public class LinkManager {
 						System.exit(0);
 					}
 				});
+		jmiLock.addActionListener(
+				new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						if(tabbedList != null) {							
+							if(LinkManager.isLocked) {
+								TabInputHandler.enableInputListeners(tabbedList);
+
+								for(int i=0; i<tabbedList.getTabList().size(); i++) {
+									CustomLinkPane currentTab = tabbedList.getTabList().get(i);
+
+									DropTargetHandler.enableDragListeners(currentTab);
+									if(currentTab.getLinkTable() != null) {
+										TableTransferHandler.enableTransferListeners(currentTab.getLinkTable(), currentTab);
+									}
+								}
+
+								jmiLock.setText("Lock");
+								jmiLockRC.setText("Lock");
+							}
+							else {
+								TabInputHandler.disableInputListeners(tabbedList);
+
+								for(int i=0; i<tabbedList.getTabList().size(); i++) {
+									CustomLinkPane currentTab = tabbedList.getTabList().get(i);
+
+									DropTargetHandler.disableDragListeners(currentTab);
+									if(currentTab.getLinkTable() != null) {
+										TableTransferHandler.disableTransferListeners(currentTab.getLinkTable(), currentTab);
+									}
+								}
+
+								jmiLock.setText("Unlock");
+								jmiLockRC.setText("Unlock");
+							}
+							LinkManager.isLocked = !LinkManager.isLocked;
+							for(int i=0; i<tabbedList.getTabList().size(); i++) {
+								tabbedList.getTabList().get(i).refresh();
+							}
+						}
+					}
+				});
+		jmiLockRC.addActionListener(
+				new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						jmiLock.doClick();
+					}
+				});
 		jmiAddTab.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
@@ -318,6 +353,12 @@ public class LinkManager {
 						}
 					}
 				});
+		jmiAddTabRC.addActionListener(
+				new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						jmiAddTab.doClick();
+					}
+				});
 		jmiDeleteTab.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
@@ -327,6 +368,12 @@ public class LinkManager {
 						else {
 							LinkManager.showLockedMessage();
 						}
+					}
+				});
+		jmiDeleteTabRC.addActionListener(
+				new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						jmiDeleteTab.doClick();
 					}
 				});
 		jmiAddLink.addActionListener(
@@ -343,6 +390,12 @@ public class LinkManager {
 						}
 					}
 				});
+		jmiAddLinkRC.addActionListener(
+				new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						jmiAddLink.doClick();
+					}
+				});
 		jmiAddSeparator.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
@@ -357,19 +410,12 @@ public class LinkManager {
 						}
 					}
 				});
-		jmiDeleteLinks.addActionListener(
+		jmiAddSeparatorRC.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
-						if(!LinkManager.isLocked) {
-							CustomLinkPane currentTab = tabbedList.getTabList().get(tabbedList.getSelectedIndex());
-							currentTab.doDelete();
-						}
-						else {
-							LinkManager.showLockedMessage();
-						}
+						jmiAddSeparator.doClick();
 					}
 				});
-		
 		jmiRunLinks.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
@@ -382,7 +428,30 @@ public class LinkManager {
 						}
 					}
 				});
-		
+		jmiRunLinksRC.addActionListener(
+				new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						jmiRunLinks.doClick();
+					}
+				});
+		jmiDeleteLinks.addActionListener(
+				new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						if(!LinkManager.isLocked) {
+							CustomLinkPane currentTab = tabbedList.getTabList().get(tabbedList.getSelectedIndex());
+							currentTab.doDelete();
+						}
+						else {
+							LinkManager.showLockedMessage();
+						}
+					}
+				});
+		jmiDeleteLinksRC.addActionListener(
+				new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						jmiDeleteLinks.doClick();
+					}
+				});
 		jmiInstructions.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
@@ -482,22 +551,6 @@ public class LinkManager {
 				+ "To re-enable editing, select File/Unlock, or press CTRL + L.",
 				"Notification", JOptionPane.WARNING_MESSAGE);
 	}
-
-	/**
-	 * The customized variable is a feature that allows the user to
-	 * set a single value, and set up a series of dynamic commands that
-	 * would use that value.
-	 * 
-	 * For instance, if the user sets up a series of DOS commands for a 
-	 * PING, NSLOOKUP, etc, and those commands share the same value, rather than
-	 * changing that value x amount of times, the user can instead use the customer variable
-	 * so that only one value needs to be modified.
-	 * 
-	 * @return - the value of the customized variable.
-	 */
-	public static String getCustomVariable() {
-		return CUSTOM_VAR;
-	}
 	
 	/**
 	 * The configuration file is and XML file that is primarily used to track the changes 
@@ -517,13 +570,6 @@ public class LinkManager {
 	 */
 	public static boolean isLocked() {
 		return isLocked;
-	}
-
-	/**
-	 * @return the time (in seconds) that the program will wait between link executions.
-	 */
-	public static int getSleepTime() {
-		return LinkManager.SLEEPTIME;
 	}
 	
 	/**

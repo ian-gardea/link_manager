@@ -248,7 +248,7 @@ public class CustomLink extends JLabel{
 
 		try {
 			// Get the link target, and replace the custom variable placeholder String with the actual value assigned.
-			String temp = target.replace("CUSTOM_VAR", LinkManager.getCustomVariable());	
+			String temp = target.replace("CUSTOM_VAR", LinkManager.CUSTOM_VAR);	
 			
 			// Process the link based on its type.
 			if(type == CustomLink.FILE) {
@@ -318,7 +318,7 @@ public class CustomLink extends JLabel{
 					// For instance, setting this sleep timer allow tabs to be created in web 
 					// browsers when multiple URLs are being opened.
 					// If this is not done, then it possible that not every selected link will run.
-					writer.println("ping 1.1.1.1 -n 1 -w " + LinkManager.getSleepTime() + ">nul");
+					writer.println("ping 1.1.1.1 -n 1 -w " + LinkManager.SLEEPTIME + ">nul");
 					writer.close();
 
 					// The below will run the windows batch file based on the version of windows being used.

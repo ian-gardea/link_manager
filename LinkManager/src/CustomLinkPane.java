@@ -215,7 +215,7 @@ public class CustomLinkPane extends JPanel {
 									// For instance, setting this sleep timer allow tabs to be created in web 
 									// browsers when multiple URLs are being opened.
 									// If this is not done, then it possible that not every selected link will run.
-									Thread.sleep(LinkManager.getSleepTime());
+									Thread.sleep(LinkManager.SLEEPTIME);
 								} 
 								catch (final InterruptedException e) {
 									// Show message box with error details
